@@ -4,10 +4,10 @@ from subprocess import PIPE, Popen
 
 mydir = dirname(abspath(__file__))
 
-def executeCommand(view, args, remote=True):
+def executeCommand(view, args, remote=True, projectCwd=None):
     rootDir = view.rootDir if hasattr(view, 'rootDir') else projectRoot(view)
     if remote:
-        args = ["bash", "remote_command.sh", '"%s"' % rootDir] + args
+        args = ["bash", "remote_command.sh", '"%s"' % rootDir, '"%s"' % (projectCwd or '')] + args
     proc = Popen(' '.join(args), stdout=PIPE, shell=True, close_fds=True, cwd=mydir)
     out, err = proc.communicate(timeout=5)
     if err:

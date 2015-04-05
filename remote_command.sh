@@ -1,9 +1,10 @@
 PROJECT_DIR=$1
 shift
-GIT_COMMAND=$1
+REMOTE_CWD=$1
+shift
+COMMAND=$1
 shift
 
-COMMAND=$GIT_COMMAND
 if [ "$#" -eq "1" ]; then
     COMMAND="$COMMAND \"$1\""
 fi
@@ -23,6 +24,7 @@ done
 if [ "$mountPoint" == "/" ] || [ "$mountPoint" == "." ] || [ "$mountPoint" == "$HOME/development" ] || [ "$mountPoint" == "$HOME/Development" ] || [ "$mountPoint" == "$HOME" ]; then
     (
         cd "$PROJECT_DIR"
+        cd "$REMOTE_CWD"
         eval $COMMAND 2>&1
     )
     exit
@@ -34,5 +36,5 @@ SERVER_PORT=22
 if $(echo $sshfsCommand | grep " \-p" > /dev/null); then
     SERVER_PORT=$(echo $sshfsCommand | awk -F' -p' '{print $2}' | awk '{print $1}')
 fi
-# echo REMOTE_USERNAME=${USER} ssh $SERVER_LOGIN -o SendEnv=REMOTE_USERNAME -p $SERVER_PORT "(cd $SERVER_DIR/$serverProjectDir; $COMMAND)"
-REMOTE_USERNAME=${USER} ssh $SERVER_LOGIN -o SendEnv=REMOTE_USERNAME -o SendEnv="GIT_*" -p $SERVER_PORT "(cd $SERVER_DIR/$serverProjectDir; $COMMAND 2>&1)"
+# echo REMOTE_USERNAME=${USER} ssh $SERVER_LOGIN -o SendEnv=REMOTE_USERNAME -o SendEnv="GIT_*" -p $SERVER_PORT "(cd $SERVER_DIR/$serverProjectDir/$REMOTE_CWD; $COMMAND 2>&1)"
+REMOTE_USERNAME=${USER} ssh $SERVER_LOGIN -o SendEnv=REMOTE_USERNAME -o SendEnv="GIT_*" -p $SERVER_PORT "(cd $SERVER_DIR/$serverProjectDir/$REMOTE_CWD; $COMMAND 2>&1)"
