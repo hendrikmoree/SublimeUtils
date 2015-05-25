@@ -1,6 +1,7 @@
 
 from os.path import dirname, abspath
 from subprocess import PIPE, Popen
+from functools import wraps
 
 mydir = dirname(abspath(__file__))
 
@@ -22,3 +23,12 @@ def projectRoot(view):
                 return folder
     elif view.window() and view.window().folders():
         return view.window().folders()[0]
+
+
+def send_self(func):
+    @wraps(func)
+    def send_self_wrapper(*args, **kwargs):
+        generator = func(*args, **kwargs)
+        generator.send(None)
+        generator.send(generator)
+    return send_self_wrapper
