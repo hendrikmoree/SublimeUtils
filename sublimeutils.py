@@ -31,4 +31,5 @@ def send_self(func):
         generator = func(*args, **kwargs)
         generator.send(None)
         generator.send(generator)
+        return generator
     return send_self_wrapper
